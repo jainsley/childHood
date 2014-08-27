@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!--<div class="container-fluid">
+    <div class="row">
+      <div class="col-md-2"></div>
+      <div class="col-md-6">
+          <h1 style="color: #FFFFFF;">childHood</h1>
+      </div>
+      <div class="col-md-4"></div>
+    </div>
+</div>-->
+
+<style>
+    #map-canvas { height: 600px }
+    #body { color: #FFFFFF }
+</style>
+
+<script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+
+<script>
+    data = JSON.parse({{ outputJSON|tojson|safe }});
+    
+    function initialize() {      
+      var lat = data["addressCoord"]["lat"];
+      var lng = data["addressCoord"]["lng"];
+      var myLatlng = new google.maps.LatLng(lat,lng);
+      var mapOptions = {
+        zoom: 15,
+        center: myLatlng
+      }
+      var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
+
+      var marker = new google.maps.Marker({
+          position: myLatlng,
+          map: map
+      });
+    }
+
+    google.maps.event.addDomListener(window, 'load', initialize);
+</script>
+
+<div class="container-fluid">
+    <div class="row">
+      <div class="col-md-4"></div>
+      <div class="col-md-4">
+        <div class = "well">
+          <div style="font-size:300%;text-align:left;color:white"> childHood score </div>
+          <div id="childHoodScore" style="font-size:250%;text-align:center;color:#FFFFFF"></div>
+          <script>document.querySelector('#childHoodScore').innerHTML = data["NYCscore"] + ' out of 100';</script>
+        </div>
+      </div>
+      <div class="col-md-4"></div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+      <div class="col-md-3"></div>
+      <div class="col-md-6">
+        <div class="well">
+          <div style="font-size:300%;text-align:left;color:white"> Education </div>
+          <div style="font-size:250%;text-align:center;color:white"> School Name </div>
+          <div id="schoolName" style="font-size:150%;text-align:center;color:white"></div>
+          <!-- <script>document.querySelector('#schoolName').innerHTML = String(data["school"]["schoolName"]).replace(/,/g, '<br>');</script> -->
+          <script>document.querySelector('#schoolName').innerHTML = String(data["school"]["schoolName"]);</script>
+          <div style="font-size:250%;text-align:center;color:white"> NYC Dept. of Education school score: </div>
+          <div id="schoolScore" style="font-size:250%;text-align:center;color:white"></div>
+          <script>document.querySelector('#schoolScore').innerHTML = String(data["school"]["schoolScore"]);</script>
+        </div>
+      </div>
+      <div class="col-md-3"></div>
+    </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+      <div class="col-md-3"></div>
+      <div class="col-md-3">
+        <div class="well">
+        <div style="font-size:200%;text-align:center;color:white" id="hood"></div>
+        <script>document.querySelector('#hood').innerHTML = "Compared to other addresses in " + data["neighborhood"];</script><br>
+        <div style="font-size:200%;text-align:center;color:white"> Crime: </div>
+        <div id="hoodCrime" style="font-size:250%;text-align:center;color:white"></div>
+        <script>document.querySelector('#hoodCrime').innerHTML = data["crimeNeighborhoodColor"][0];</script>
+        <script>document.querySelector('#hoodCrime').style.color = data['crimeNeighborhoodColor'][1];</script>
+        <div style="font-size:200%;text-align:center;color:white"> Number of kids close in age: </div>
+        <div id="hoodKids" style="font-size:250%;text-align:center;color:white"></div>
+        <script>document.querySelector('#hoodKids').innerHTML = data["censusNeighborhoodColor"][0];</script>
+        <script>document.querySelector('#hoodKids').style.color = data['censusNeighborhoodColor'][1];</script>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="well">
+        <div style="font-size:200%;text-align:center;color:white" id="NYC"></div>
+        <script>document.querySelector('#NYC').innerHTML = 'Compared to addresses across NYC';</script><br>
+        <div style="font-size:200%;text-align:center;color:white"> Crime: </div>
+        <div id="NYCcrime" style="font-size:250%;text-align:center;color:white"></div>
+        <script>document.querySelector('#NYCcrime').innerHTML = data["crimeNYCColor"][0];</script>
+        <script>document.querySelector('#NYCcrime').style.color = data['crimeNYCColor'][1];</script>
+        <div style="font-size:200%;text-align:center;color:white"> Number of kids close in age: </div>
+        <div id="NYCKids" style="font-size:250%;text-align:center;color:white"></div>
+        <script>document.querySelector('#NYCKids').innerHTML = data["censusNYCColor"][0];</script>
+        <script>document.querySelector('#NYCKids').style.color = data['censusNYCColor'][1];</script>
+        </div>
+      </div>
+      <div class="col-md-3"></div>
+      </div>
+</div>
+
+<div class="container-fluid">
+    <div class="row">
+      <div class="col-md-4"></div>
+      <div class="col-md-4">
+        <div class="well">
+          <div style="font-size:300%;text-align:center;color:white"> Traffic on nearby streets </div>
+          <div id="traffic" style="font-size:300%;text-align:center"></div>
+          <script>document.querySelector('#traffic').innerHTML = data['trafficColor'][0];</script>
+          <script>document.querySelector('#traffic').style.color = data['trafficColor'][1];</script>
+        </div>
+      </div>
+      <div class="col-md-4"></div>
+    </div>
+</div>
+
+<div class="container-fluid">
+  <div class="col-md-3"></div>
+  <div class="col-md-6" id="map-canvas"></div>
+  <div class="col-md-3"></div>
+</div>
+
+{% endblock %}
+
+
+<!-- {
+  "NYCscore": 46.0,
+  "addressCoord": {
+    "lat": 40.7078567,
+    "lng": -73.9556487
+  },
+  "borough": "Brooklyn",
+  "censusNYC": 48,
+  "censusNYCColor": [
+    "Average",
+    "#FFFF00"
+  ],
+  "censusNeighborhood": 42,
+  "censusNeighborhoodColor": [
+    "Average",
+    "#FFFF00"
+  ],
+  "crimeNYC": 80,
+  "crimeNYCColor": [
+    "High",
+    "#CC0000"
+  ],
+  "crimeNeighborhood": 71,
+  "crimeNeighborhoodColor": [
+    "High",
+    "#CC0000"
+  ],
+  "hoodScore": 47.0,
+  "neighborhood": "Williamsburg",
+  "school": {
+    "remarks": "Optional shared zone: PS 319 (K-1) or PS 414 is phasing in K-3; Grades 4-5 are zoned to PS 19 (during the 2013-14 school year).",
+    "schoolDBN": "14K019",
+    "schoolName": "P.S. 019 Roberto Clemente",
+    "schoolScore": "9"
+  },
+  "traffic": 37,
+  "trafficColor": [
+    "Low",
+    "#00CC00"
+  ]
+} -->
